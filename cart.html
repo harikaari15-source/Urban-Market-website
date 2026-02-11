@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - URBAN MARKET</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --primary: #FF385C; --dark: #1a1a1a; --light: #ffffff; --gray: #6c757d; --bg-light: #f8f9fa; }
+        body { font-family: 'Poppins', sans-serif; color: var(--dark); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+        .navbar { background: var(--light); box-shadow: 0 2px 20px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 1000; }
+        .nav-container { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; max-width: 1400px; margin: 0 auto; }
+        .logo { font-family: 'Montserrat', sans-serif; font-size: 1.8rem; font-weight: 900; color: var(--primary); }
+        .nav-menu { display: flex; gap: 2.5rem; list-style: none; }
+        .nav-menu a { text-decoration: none; color: var(--dark); font-weight: 600; }
+        .nav-menu a.active { color: var(--primary); }
+        .cart-badge { background: var(--primary); color: white; padding: 0.3rem 0.7rem; border-radius: 20px; font-size: 0.85rem; }
+        .page-header { padding: 3rem 0; background: var(--bg-light); text-align: center; }
+        .page-title { font-family: 'Montserrat', sans-serif; font-size: 3rem; font-weight: 900; }
+        .cart-section { padding: 4rem 0; min-height: 60vh; }
+        .cart-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 3rem; }
+        .cart-items { background: white; border-radius: 20px; padding: 2rem; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+        .cart-item { display: flex; gap: 2rem; padding: 2rem; border-bottom: 1px solid var(--bg-light); align-items: center; }
+        .cart-item:last-child { border-bottom: none; }
+        .item-image { width: 100px; height: 100px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 3rem; flex-shrink: 0; }
+        .item-details { flex: 1; }
+        .item-name { font-weight: 700; font-size: 1.2rem; margin-bottom: 0.5rem; }
+        .item-price { color: var(--primary); font-weight: 700; font-size: 1.1rem; }
+        .item-actions { display: flex; align-items: center; gap: 1rem; }
+        .quantity-control { display: flex; align-items: center; gap: 0.5rem; background: var(--bg-light); padding: 0.5rem; border-radius: 10px; }
+        .qty-btn { width: 35px; height: 35px; border: none; background: white; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 1.2rem; }
+        .qty-btn:hover { background: var(--primary); color: white; }
+        .remove-btn { background: #dc3545; color: white; border: none; padding: 0.7rem 1.5rem; border-radius: 10px; cursor: pointer; font-weight: 600; }
+        .remove-btn:hover { background: #c82333; }
+        .cart-summary { background: white; border-radius: 20px; padding: 2rem; box-shadow: 0 5px 20px rgba(0,0,0,0.05); height: fit-content; position: sticky; top: 120px; }
+        .summary-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 1.5rem; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--bg-light); }
+        .summary-row.total { border-bottom: none; font-size: 1.3rem; font-weight: 800; color: var(--primary); }
+        .btn { display: block; width: 100%; padding: 1.2rem; text-decoration: none; border-radius: 50px; font-weight: 700; text-align: center; border: none; cursor: pointer; transition: all 0.3s; margin-top: 1rem; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: #e6324f; transform: translateY(-2px); }
+        .btn-secondary { background: var(--bg-light); color: var(--dark); }
+        .empty-cart { text-align: center; padding: 5rem 0; display: none; }
+        .empty-cart-icon { font-size: 8rem; margin-bottom: 2rem; opacity: 0.3; }
+        .empty-cart h3 { font-size: 2rem; margin-bottom: 1rem; }
+        .footer { background: var(--dark); color: white; padding: 3rem 0 2rem; margin-top: 5rem; }
+        .footer-bottom { text-align: center; color: rgba(255,255,255,0.5); }
+        @media (max-width: 968px) { .cart-grid { grid-template-columns: 1fr; } .cart-item { flex-direction: column; text-align: center; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">URBAN MARKET</div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="shop.html">Shop</a></li>
+                <li><a href="cart.html" class="active">Cart <span class="cart-badge" id="cart-count">0</span></a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <h1 class="page-title">Shopping Cart</h1>
+    </div>
+
+    <section class="cart-section">
+        <div class="container">
+            <div class="cart-grid" id="cart-content"></div>
+            <div class="empty-cart" id="empty-cart">
+                <div class="empty-cart-icon">🛒</div>
+                <h3>Your cart is empty</h3>
+                <p style="color: var(--gray); margin-bottom: 2rem;">Add some products to get started!</p>
+                <a href="shop.html" class="btn btn-primary" style="max-width: 300px; margin: 0 auto;">Continue Shopping</a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2024 Urban Market. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function getCart() { return JSON.parse(localStorage.getItem('cart') || '[]'); }
+        function saveCart(cart) { localStorage.setItem('cart', JSON.stringify(cart)); displayCart(); updateCartCount(); }
+        function updateCartCount() {
+            const cart = getCart();
+            document.getElementById('cart-count').textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+        }
+        function updateQuantity(id, change) {
+            const cart = getCart();
+            const item = cart.find(i => i.id === id);
+            if (item) {
+                item.quantity += change;
+                if (item.quantity <= 0) removeItem(id);
+                else saveCart(cart);
+            }
+        }
+        function removeItem(id) {
+            const cart = getCart().filter(i => i.id !== id);
+            saveCart(cart);
+        }
+        function displayCart() {
+            const cart = getCart();
+            const content = document.getElementById('cart-content');
+            const empty = document.getElementById('empty-cart');
+            
+            if (cart.length === 0) {
+                content.style.display = 'none';
+                empty.style.display = 'block';
+                return;
+            }
+            
+            empty.style.display = 'none';
+            content.style.display = 'grid';
+            
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const tax = subtotal * 0.1;
+            const shipping = subtotal > 100 ? 0 : 15;
+            const total = subtotal + tax + shipping;
+            
+            content.innerHTML = `
+                <div class="cart-items">
+                    ${cart.map(item => `
+                        <div class="cart-item">
+                            <div class="item-image">${item.icon}</div>
+                            <div class="item-details">
+                                <div class="item-name">${item.name}</div>
+                                <div class="item-price">$${item.price.toFixed(2)}</div>
+                            </div>
+                            <div class="item-actions">
+                                <div class="quantity-control">
+                                    <button class="qty-btn" onclick="updateQuantity(${item.id}, -1)">-</button>
+                                    <span style="font-weight: 700; min-width: 30px; text-align: center;">${item.quantity}</span>
+                                    <button class="qty-btn" onclick="updateQuantity(${item.id}, 1)">+</button>
+                                </div>
+                                <button class="remove-btn" onclick="removeItem(${item.id})">Remove</button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="cart-summary">
+                    <div class="summary-title">Order Summary</div>
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span>$${subtotal.toFixed(2)}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Tax (10%)</span>
+                        <span>$${tax.toFixed(2)}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Shipping</span>
+                        <span>${shipping === 0 ? 'FREE' : '$' + shipping.toFixed(2)}</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <span>$${total.toFixed(2)}</span>
+                    </div>
+                    <a href="checkout.html" class="btn btn-primary">Proceed to Checkout</a>
+                    <a href="shop.html" class="btn btn-secondary">Continue Shopping</a>
+                </div>
+            `;
+        }
+        document.addEventListener('DOMContentLoaded', () => { displayCart(); updateCartCount(); });
+    </script>
+</body>
+</html>
